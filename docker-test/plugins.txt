@@ -1,0 +1,7 @@
+apache-httpcomponents-client-4-api:latest
+configuration-as-code:latest
+credentials:latest
+gson-api:latest
+job-dsl:latest
+json-api:latest
+matrix-auth:latest

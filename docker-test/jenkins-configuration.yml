@@ -1,0 +1,33 @@
+---
+jenkins:
+  systemMessage: "Jenkins Setup using Docker and Jenkins Configuration as Code"
+  agentProtocols:
+    - JNLP4-connect
+    - Ping
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+  authorizationStrategy:
+    globalMatrix:
+      entries:
+        - user:
+            name: "admin"
+            permissions:
+            - "Overall/Administer"
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: false 
+  numExecutors: 1       
+  updateCenter:
+    sites:
+      - id: default
+        url: https://updates.jenkins.io/update-center.json
+security:
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: false
+unclassified:
+  location:
+    url: http://localhost:8888/
