@@ -1,0 +1,2 @@
+jenkins:
+  systemMessage: "Jenkins Setup using Docker and Jenkins Configuration as Code Test"
