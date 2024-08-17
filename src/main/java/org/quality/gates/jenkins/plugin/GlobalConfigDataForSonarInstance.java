@@ -21,7 +21,7 @@ public class GlobalConfigDataForSonarInstance {
 
     private Secret secretPass;
 
-    private String token;
+    private Secret token;
 
     private int timeToWait;
 
@@ -55,7 +55,7 @@ public class GlobalConfigDataForSonarInstance {
     }
 
     public GlobalConfigDataForSonarInstance(
-            String name, String sonarUrl, String token, int timeToWait, int maxWaitTime) {
+            String name, String sonarUrl, Secret token, int timeToWait, int maxWaitTime) {
 
         this.name = name;
         this.sonarUrl = sonarUrl;
@@ -80,8 +80,8 @@ public class GlobalConfigDataForSonarInstance {
         this.username = username;
     }
 
-    public String getPass() {
-        return Secret.toString(secretPass);
+    public Secret getPass() {
+        return secretPass != null ? secretPass : Secret.fromString("");
     }
 
     public void setPass(String pass) {
@@ -112,12 +112,12 @@ public class GlobalConfigDataForSonarInstance {
         this.maxWaitTime = maxWaitTime;
     }
 
-    public String getToken() {
-        return token;
+    public Secret getToken() {
+        return token != null ? token : Secret.fromString("");
     }
 
     public void setToken(String token) {
-        this.token = token;
+        this.token = Secret.fromString(Util.fixEmptyAndTrim(token));
     }
 
     @Override

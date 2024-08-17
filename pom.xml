@@ -9,9 +9,8 @@
     <relativePath />
   </parent>
 
-  <groupId>io.jenkins.plugins</groupId>
   <artifactId>sonar-quality-gates</artifactId>
-  <version>1.3.2-SNAPSHOT</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Sonar Quality Gates Plugin</name>
@@ -40,6 +39,7 @@
   </scm>
 
   <properties>
+    <changelist>999999-SNAPSHOT</changelist>
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.version>2.440.3</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>

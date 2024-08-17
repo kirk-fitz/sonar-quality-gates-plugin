@@ -74,8 +74,8 @@ public abstract class SonarHttpRequester {
 
         httpClientContext = HttpClientContext.create();
 
-        if (StringUtils.isNotEmpty(globalConfigDataForSonarInstance.getToken())) {
-            token = globalConfigDataForSonarInstance.getToken();
+        if (StringUtils.isNotEmpty(globalConfigDataForSonarInstance.getToken().getPlainText())) {
+            token = globalConfigDataForSonarInstance.getToken().getPlainText();
             httpClient = HttpClientBuilder.create().build();
         } else {
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
@@ -83,7 +83,7 @@ public abstract class SonarHttpRequester {
                     AuthScope.ANY,
                     new UsernamePasswordCredentials(
                             globalConfigDataForSonarInstance.getUsername(),
-                            globalConfigDataForSonarInstance.getPass()));
+                            globalConfigDataForSonarInstance.getPass().getPlainText()));
 
             httpClient = HttpClientBuilder.create()
                     .setDefaultCredentialsProvider(credsProvider)
@@ -95,7 +95,8 @@ public abstract class SonarHttpRequester {
 
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("login", globalConfigDataForSonarInstance.getUsername()));
-            nvps.add(new BasicNameValuePair("password", globalConfigDataForSonarInstance.getPass()));
+            nvps.add(new BasicNameValuePair(
+                    "password", globalConfigDataForSonarInstance.getPass().getPlainText()));
             nvps.add(new BasicNameValuePair("remember_me", "1"));
             loginHttpPost.setEntity(createEntity(nvps));
             loginHttpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");

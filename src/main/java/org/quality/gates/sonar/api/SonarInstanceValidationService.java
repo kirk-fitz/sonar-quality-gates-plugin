@@ -37,20 +37,20 @@ public class SonarInstanceValidationService {
 
     private Secret validatePassword(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
 
-        String sonarPassword;
+        Secret sonarPassword;
 
-        if (globalConfigDataForSonarInstance.getPass().isEmpty()) {
-            sonarPassword = GlobalConfigDataForSonarInstance.DEFAULT_PASS;
+        if (globalConfigDataForSonarInstance.getPass().getPlainText().isEmpty()) {
+            sonarPassword = Secret.fromString(GlobalConfigDataForSonarInstance.DEFAULT_PASS);
         } else {
             sonarPassword = globalConfigDataForSonarInstance.getPass();
         }
 
-        return Secret.fromString(sonarPassword);
+        return sonarPassword;
     }
 
     GlobalConfigDataForSonarInstance validateData(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
 
-        if (StringUtils.isNotEmpty(globalConfigDataForSonarInstance.getToken())) {
+        if (StringUtils.isNotEmpty(globalConfigDataForSonarInstance.getToken().getPlainText())) {
             return new GlobalConfigDataForSonarInstance(
                     globalConfigDataForSonarInstance.getName(),
                     validateUrl(globalConfigDataForSonarInstance),
