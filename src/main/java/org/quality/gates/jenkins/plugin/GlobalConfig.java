@@ -52,6 +52,7 @@ public class GlobalConfig extends GlobalConfiguration {
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
 
         listOfGlobalConfigData = globalConfigurationService.instantiateGlobalConfigData(json);
+        req.bindJSON(this, json);
         save();
 
         return true;

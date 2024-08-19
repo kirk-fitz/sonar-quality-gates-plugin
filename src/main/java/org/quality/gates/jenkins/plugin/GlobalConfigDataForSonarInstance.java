@@ -1,11 +1,14 @@
 package org.quality.gates.jenkins.plugin;
 
+import hudson.Extension;
 import hudson.Util;
+import hudson.model.AbstractDescribableImpl;
+import hudson.model.Descriptor;
 import hudson.util.Secret;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-public class GlobalConfigDataForSonarInstance {
+public class GlobalConfigDataForSonarInstance extends AbstractDescribableImpl<GlobalConfigDataForSonarInstance> {
 
     public static final String DEFAULT_URL = "http://localhost:9000";
 
@@ -129,6 +132,9 @@ public class GlobalConfigDataForSonarInstance {
     public void setToken(String token) {
         this.token = Secret.fromString(Util.fixEmptyAndTrim(token));
     }
+
+    @Extension
+    public static class DescriptorImpl extends Descriptor<GlobalConfigDataForSonarInstance> {}
 
     @Override
     public boolean equals(Object o) {
