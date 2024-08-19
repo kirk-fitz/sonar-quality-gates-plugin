@@ -118,7 +118,7 @@ public class QGPublisherIT {
     private void setGlobalConfigDataAndJobConfigDataNames(String firstInstanceName, String secondInstanceName) {
         globalConfigDataForSonarInstance.setName(firstInstanceName);
         jobConfigData.setSonarInstanceName(secondInstanceName);
-        globalConfig.setGlobalConfigDataForSonarInstances(globalConfigDataForSonarInstanceList);
+        globalConfig.setListOfGlobalConfigData(globalConfigDataForSonarInstanceList);
     }
 
     private FreeStyleBuild buildProject(FreeStyleProject freeStyleProject)

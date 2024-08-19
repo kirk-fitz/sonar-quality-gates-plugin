@@ -43,8 +43,7 @@ public class GlobalConfig extends GlobalConfiguration {
     }
 
     @DataBoundSetter
-    public void setGlobalConfigDataForSonarInstances(
-            List<GlobalConfigDataForSonarInstance> globalConfigDataForSonarInstances) {
+    public void setListOfGlobalConfigData(List<GlobalConfigDataForSonarInstance> globalConfigDataForSonarInstances) {
         this.listOfGlobalConfigData = globalConfigDataForSonarInstances;
     }
 
