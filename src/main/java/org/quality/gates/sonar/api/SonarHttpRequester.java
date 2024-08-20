@@ -26,9 +26,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.quality.gates.jenkins.plugin.GlobalConfigDataForSonarInstance;
 import org.quality.gates.jenkins.plugin.JobConfigData;
 import org.quality.gates.jenkins.plugin.QGException;
+import org.quality.gates.jenkins.plugin.SonarInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +44,13 @@ public abstract class SonarHttpRequester {
 
     /**
      * Cached client context for lazy login.
-     * @see #loginApi(GlobalConfigDataForSonarInstance)
+     * @see #loginApi(SonarInstance)
      */
     private transient HttpClientContext httpClientContext;
 
     /**
      * Cached client for lazy login.
-     * @see #loginApi(GlobalConfigDataForSonarInstance)
+     * @see #loginApi(SonarInstance)
      */
     private transient CloseableHttpClient httpClient;
 
@@ -70,20 +70,19 @@ public abstract class SonarHttpRequester {
         this.logged = logged;
     }
 
-    private void loginApi(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    private void loginApi(SonarInstance sonarInstance) {
 
         httpClientContext = HttpClientContext.create();
 
-        if (StringUtils.isNotEmpty(globalConfigDataForSonarInstance.getToken().getPlainText())) {
-            token = globalConfigDataForSonarInstance.getToken().getPlainText();
+        if (StringUtils.isNotEmpty(sonarInstance.getToken().getPlainText())) {
+            token = sonarInstance.getToken().getPlainText();
             httpClient = HttpClientBuilder.create().build();
         } else {
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(
                     AuthScope.ANY,
                     new UsernamePasswordCredentials(
-                            globalConfigDataForSonarInstance.getUsername(),
-                            globalConfigDataForSonarInstance.getPass().getPlainText()));
+                            sonarInstance.getUsername(), sonarInstance.getPass().getPlainText()));
 
             httpClient = HttpClientBuilder.create()
                     .setDefaultCredentialsProvider(credsProvider)
@@ -91,12 +90,11 @@ public abstract class SonarHttpRequester {
 
             httpClientContext.setCredentialsProvider(credsProvider);
 
-            HttpPost loginHttpPost = new HttpPost(globalConfigDataForSonarInstance.getSonarUrl() + getSonarApiLogin());
+            HttpPost loginHttpPost = new HttpPost(sonarInstance.getUrl() + getSonarApiLogin());
 
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("login", globalConfigDataForSonarInstance.getUsername()));
-            nvps.add(new BasicNameValuePair(
-                    "password", globalConfigDataForSonarInstance.getPass().getPlainText()));
+            nvps.add(new BasicNameValuePair("login", sonarInstance.getUsername()));
+            nvps.add(new BasicNameValuePair("password", sonarInstance.getPass().getPlainText()));
             nvps.add(new BasicNameValuePair("remember_me", "1"));
             loginHttpPost.setEntity(createEntity(nvps));
             loginHttpPost.addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -160,15 +158,14 @@ public abstract class SonarHttpRequester {
         }
     }
 
-    String getAPITaskInfo(JobConfigData configData, GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance)
-            throws QGException {
+    String getAPITaskInfo(JobConfigData configData, SonarInstance sonarInstance) throws QGException {
 
-        checkLogged(globalConfigDataForSonarInstance);
+        checkLogged(sonarInstance);
 
         try {
-            String sonarProjectKey = getSonarApiTaskInfoParameter(configData, globalConfigDataForSonarInstance);
+            String sonarProjectKey = getSonarApiTaskInfoParameter(configData, sonarInstance);
             String sonarProjectTaskInfoPath = getSonarApiTaskInfoUrl();
-            String sonarHostUrl = globalConfigDataForSonarInstance.getSonarUrl();
+            String sonarHostUrl = sonarInstance.getUrl();
             String taskInfoUri =
                     sonarHostUrl + String.format(sonarProjectTaskInfoPath, URLEncoder.encode(sonarProjectKey, "UTF-8"));
 
@@ -181,16 +178,14 @@ public abstract class SonarHttpRequester {
 
     protected abstract String getSonarApiTaskInfoUrl();
 
-    protected abstract String getSonarApiTaskInfoParameter(
-            JobConfigData jobConfigData, GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance);
+    protected abstract String getSonarApiTaskInfoParameter(JobConfigData jobConfigData, SonarInstance sonarInstance);
 
-    String getAPIInfo(JobConfigData configData, GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance)
-            throws QGException {
+    String getAPIInfo(JobConfigData configData, SonarInstance sonarInstance) throws QGException {
 
-        checkLogged(globalConfigDataForSonarInstance);
+        checkLogged(sonarInstance);
 
-        String sonarApiQualityGates = globalConfigDataForSonarInstance.getSonarUrl()
-                + String.format(getSonarApiQualityGatesStatusUrl(), configData.getProjectKey());
+        String sonarApiQualityGates =
+                sonarInstance.getUrl() + String.format(getSonarApiQualityGatesStatusUrl(), configData.getProjectKey());
 
         HttpGet request = new HttpGet(String.format(sonarApiQualityGates, configData.getProjectKey()));
 
@@ -199,13 +194,12 @@ public abstract class SonarHttpRequester {
 
     protected abstract String getSonarApiQualityGatesStatusUrl();
 
-    protected String getComponentId(
-            JobConfigData configData, GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    protected String getComponentId(JobConfigData configData, SonarInstance sonarInstance) {
 
-        checkLogged(globalConfigDataForSonarInstance);
+        checkLogged(sonarInstance);
 
-        String sonarApiQualityGates = globalConfigDataForSonarInstance.getSonarUrl()
-                + String.format(getSonarApiComponentShow(), configData.getProjectKey());
+        String sonarApiQualityGates =
+                sonarInstance.getUrl() + String.format(getSonarApiComponentShow(), configData.getProjectKey());
 
         HttpGet request = new HttpGet(sonarApiQualityGates);
 
@@ -218,10 +212,10 @@ public abstract class SonarHttpRequester {
         return component.getComponent().getId();
     }
 
-    private void checkLogged(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    private void checkLogged(SonarInstance sonarInstance) {
 
         if (!isLogged()) {
-            loginApi(globalConfigDataForSonarInstance);
+            loginApi(sonarInstance);
         }
     }
 }

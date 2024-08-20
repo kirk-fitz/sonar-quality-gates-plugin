@@ -2,69 +2,69 @@ package org.quality.gates.sonar.api;
 
 import hudson.util.Secret;
 import org.apache.commons.lang.StringUtils;
-import org.quality.gates.jenkins.plugin.GlobalConfigDataForSonarInstance;
+import org.quality.gates.jenkins.plugin.SonarInstance;
 
 public class SonarInstanceValidationService {
 
-    String validateUrl(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    String validateUrl(SonarInstance sonarInstance) {
 
-        String sonarUrl;
+        String url;
 
-        if (globalConfigDataForSonarInstance.getSonarUrl().isEmpty()) {
-            sonarUrl = GlobalConfigDataForSonarInstance.DEFAULT_URL;
+        if (sonarInstance.getUrl().isEmpty()) {
+            url = SonarInstance.DEFAULT_URL;
         } else {
-            sonarUrl = globalConfigDataForSonarInstance.getSonarUrl();
-            if (sonarUrl.endsWith("/")) {
-                sonarUrl = sonarUrl.substring(0, sonarUrl.length() - 1);
+            url = sonarInstance.getUrl();
+            if (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
             }
         }
 
-        return sonarUrl;
+        return url;
     }
 
-    String validateUsername(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    String validateUsername(SonarInstance sonarInstance) {
 
         String sonarUsername;
 
-        if (globalConfigDataForSonarInstance.getUsername().isEmpty()) {
-            sonarUsername = GlobalConfigDataForSonarInstance.DEFAULT_USERNAME;
+        if (sonarInstance.getUsername().isEmpty()) {
+            sonarUsername = SonarInstance.DEFAULT_USERNAME;
         } else {
-            sonarUsername = globalConfigDataForSonarInstance.getUsername();
+            sonarUsername = sonarInstance.getUsername();
         }
 
         return sonarUsername;
     }
 
-    private Secret validatePassword(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    private Secret validatePassword(SonarInstance sonarInstance) {
 
         Secret sonarPassword;
 
-        if (globalConfigDataForSonarInstance.getPass().getPlainText().isEmpty()) {
-            sonarPassword = Secret.fromString(GlobalConfigDataForSonarInstance.DEFAULT_PASS);
+        if (sonarInstance.getPass().getPlainText().isEmpty()) {
+            sonarPassword = Secret.fromString(SonarInstance.DEFAULT_PASS);
         } else {
-            sonarPassword = globalConfigDataForSonarInstance.getPass();
+            sonarPassword = sonarInstance.getPass();
         }
 
         return sonarPassword;
     }
 
-    GlobalConfigDataForSonarInstance validateData(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    SonarInstance validateData(SonarInstance sonarInstance) {
 
-        if (StringUtils.isNotEmpty(globalConfigDataForSonarInstance.getToken().getPlainText())) {
-            return new GlobalConfigDataForSonarInstance(
-                    globalConfigDataForSonarInstance.getName(),
-                    validateUrl(globalConfigDataForSonarInstance),
-                    globalConfigDataForSonarInstance.getToken(),
-                    globalConfigDataForSonarInstance.getTimeToWait(),
-                    globalConfigDataForSonarInstance.getMaxWaitTime());
+        if (StringUtils.isNotEmpty(sonarInstance.getToken().getPlainText())) {
+            return new SonarInstance(
+                    sonarInstance.getName(),
+                    validateUrl(sonarInstance),
+                    sonarInstance.getToken(),
+                    sonarInstance.getTimeToWait(),
+                    sonarInstance.getMaxWaitTime());
         } else {
-            return new GlobalConfigDataForSonarInstance(
-                    globalConfigDataForSonarInstance.getName(),
-                    validateUrl(globalConfigDataForSonarInstance),
-                    validateUsername(globalConfigDataForSonarInstance),
-                    validatePassword(globalConfigDataForSonarInstance),
-                    globalConfigDataForSonarInstance.getTimeToWait(),
-                    globalConfigDataForSonarInstance.getMaxWaitTime());
+            return new SonarInstance(
+                    sonarInstance.getName(),
+                    validateUrl(sonarInstance),
+                    validateUsername(sonarInstance),
+                    validatePassword(sonarInstance),
+                    sonarInstance.getTimeToWait(),
+                    sonarInstance.getMaxWaitTime());
         }
     }
 }

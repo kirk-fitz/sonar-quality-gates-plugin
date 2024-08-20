@@ -18,19 +18,18 @@ public class JobConfigurationService {
 
     private static final Pattern ENV_VARIABLE_WITHOUT_BRACES_PATTERN = Pattern.compile("(\\$[a-zA-Z0-9_]+)");
 
-    public ListBoxModel getListOfSonarInstanceNames(GlobalConfig globalConfig) {
+    public ListBoxModel getListOfSonarInstanceNames(GlobalSonarQualityGatesConfiguration globalConfig) {
 
         ListBoxModel listBoxModel = new ListBoxModel();
 
-        for (GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance :
-                globalConfig.fetchListOfGlobalConfigData()) {
-            listBoxModel.add(globalConfigDataForSonarInstance.getName());
+        for (SonarInstance sonarInstance : globalConfig.fetchSonarInstances()) {
+            listBoxModel.add(sonarInstance.getName());
         }
 
         return listBoxModel;
     }
 
-    public JobConfigData createJobConfigData(JSONObject formData, GlobalConfig globalConfig) {
+    public JobConfigData createJobConfigData(JSONObject formData, GlobalSonarQualityGatesConfiguration globalConfig) {
 
         JobConfigData firstInstanceJobConfigData = new JobConfigData();
         String projectKey = formData.getString("projectKey");
@@ -45,7 +44,7 @@ public class JobConfigurationService {
 
         String name;
 
-        if (!globalConfig.fetchListOfGlobalConfigData().isEmpty()) {
+        if (!globalConfig.fetchSonarInstances().isEmpty()) {
             name = hasFormDataKey(formData, globalConfig);
         } else {
             name = "";
@@ -58,14 +57,14 @@ public class JobConfigurationService {
         return firstInstanceJobConfigData;
     }
 
-    protected String hasFormDataKey(JSONObject formData, GlobalConfig globalConfig) {
+    protected String hasFormDataKey(JSONObject formData, GlobalSonarQualityGatesConfiguration globalConfig) {
 
         String instanceName;
 
         if (formData.containsKey("sonarInstancesName")) {
             instanceName = formData.getString("sonarInstancesName");
         } else {
-            instanceName = globalConfig.fetchListOfGlobalConfigData().get(0).getName();
+            instanceName = globalConfig.fetchSonarInstances().get(0).getName();
         }
 
         return instanceName;

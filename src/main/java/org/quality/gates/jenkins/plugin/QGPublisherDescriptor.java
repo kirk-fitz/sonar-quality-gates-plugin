@@ -40,7 +40,7 @@ public final class QGPublisherDescriptor extends BuildStepDescriptor<Publisher> 
         return jobExecutionService;
     }
 
-    public ListBoxModel doFillListOfGlobalConfigDataItems() {
+    public ListBoxModel doFillsonarInstancesItems() {
         return jobConfigurationService.getListOfSonarInstanceNames(jobExecutionService.getGlobalConfigData());
     }
 
@@ -81,9 +81,9 @@ public final class QGPublisherDescriptor extends BuildStepDescriptor<Publisher> 
 
         JobConfigData firstInstanceJobConfigData =
                 jobConfigurationService.createJobConfigData(formData, jobExecutionService.getGlobalConfigData());
-        GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance = jobExecutionService
+        SonarInstance sonarInstance = jobExecutionService
                 .getGlobalConfigData()
                 .getSonarInstanceByName(firstInstanceJobConfigData.getSonarInstanceName());
-        return new QGPublisher(firstInstanceJobConfigData, globalConfigDataForSonarInstance);
+        return new QGPublisher(firstInstanceJobConfigData, sonarInstance);
     }
 }

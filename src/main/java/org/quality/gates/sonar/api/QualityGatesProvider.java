@@ -5,9 +5,9 @@ import com.google.gson.GsonBuilder;
 import hudson.model.BuildListener;
 import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONException;
-import org.quality.gates.jenkins.plugin.GlobalConfigDataForSonarInstance;
 import org.quality.gates.jenkins.plugin.JobConfigData;
 import org.quality.gates.jenkins.plugin.QGException;
+import org.quality.gates.jenkins.plugin.SonarInstance;
 
 public class QualityGatesProvider {
 
@@ -21,10 +21,10 @@ public class QualityGatesProvider {
 
     private SonarInstanceValidationService sonarInstanceValidationService;
 
-    public QualityGatesProvider(GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    public QualityGatesProvider(SonarInstance sonarInstance) {
 
         this.qualityGateResponseParser = new QualityGateResponseParser();
-        this.sonarHttpRequester = SonarHttpRequesterFactory.getSonarHttpRequester(globalConfigDataForSonarInstance);
+        this.sonarHttpRequester = SonarHttpRequesterFactory.getSonarHttpRequester(sonarInstance);
         this.sonarInstanceValidationService = new SonarInstanceValidationService();
     }
 
@@ -39,18 +39,15 @@ public class QualityGatesProvider {
     }
 
     public QualityGatesStatus getAPIResultsForQualityGates(
-            JobConfigData jobConfigData,
-            GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance,
-            BuildListener listener)
+            JobConfigData jobConfigData, SonarInstance sonarInstance, BuildListener listener)
             throws JSONException, InterruptedException {
 
-        GlobalConfigDataForSonarInstance validatedData =
-                sonarInstanceValidationService.validateData(globalConfigDataForSonarInstance);
+        SonarInstance validatedData = sonarInstanceValidationService.validateData(sonarInstance);
 
         boolean taskAnalysisRunning = true;
 
-        int timeToWait = globalConfigDataForSonarInstance.getTimeToWait();
-        int maxWaitTime = globalConfigDataForSonarInstance.getMaxWaitTime();
+        int timeToWait = sonarInstance.getTimeToWait();
+        int maxWaitTime = sonarInstance.getMaxWaitTime();
 
         if (timeToWait == 0) {
             timeToWait = MILLISECONDS_10_SECONDS;
@@ -97,10 +94,8 @@ public class QualityGatesProvider {
         return qualityGateResponseParser.getQualityGateResultFromJSON(requesterResult);
     }
 
-    private String getRequesterResult(
-            JobConfigData jobConfigData, GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance)
-            throws QGException {
+    private String getRequesterResult(JobConfigData jobConfigData, SonarInstance sonarInstance) throws QGException {
 
-        return sonarHttpRequester.getAPIInfo(jobConfigData, globalConfigDataForSonarInstance);
+        return sonarHttpRequester.getAPIInfo(jobConfigData, sonarInstance);
     }
 }

@@ -1,7 +1,7 @@
 package org.quality.gates.sonar.api61;
 
-import org.quality.gates.jenkins.plugin.GlobalConfigDataForSonarInstance;
 import org.quality.gates.jenkins.plugin.JobConfigData;
+import org.quality.gates.jenkins.plugin.SonarInstance;
 import org.quality.gates.sonar.api.SonarHttpRequester;
 
 /**
@@ -34,8 +34,7 @@ public class SonarHttpRequester61 extends SonarHttpRequester {
     }
 
     @Override
-    protected String getSonarApiTaskInfoParameter(
-            JobConfigData jobConfigData, GlobalConfigDataForSonarInstance globalConfigDataForSonarInstance) {
+    protected String getSonarApiTaskInfoParameter(JobConfigData jobConfigData, SonarInstance sonarInstance) {
         return jobConfigData.getProjectKey();
     }
 }
